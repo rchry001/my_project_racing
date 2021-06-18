@@ -1,0 +1,4 @@
+
+pygame
+python-dotenv # see: https://github.com/theskumar/python-dotenv
+
