@@ -1,9 +1,11 @@
 
 import pygame
+import time
+import random
 pygame.init()
 
-display_width = 800
-display_height = 600
+display_width = 900
+display_height = 700
 
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('The Speedracer')
@@ -19,6 +21,17 @@ car_height = 82
 clock = pygame.time.Clock()
 crashed = False
 PlayerImg = pygame.image.load('racecar.png')
+
+def dangers_dodged(count):
+    font = pygame.font.SysFont(None, 25)
+    text = font.render("Dodged: "+str(count), True, black)
+    gameDisplay.blit(text,(0,0))
+
+####### Defining the objects the player must avoid
+def dangers(dangers_x, dangers_y, dangers_w, dangers_h, black):
+    pygame.draw.rect(gameDisplay, black, [dangers_x, dangers_y, dangers_w, dangers_h])
+#######
+
 
 def car(x,y):
     gameDisplay.blit(PlayerImg, (x,y))
@@ -48,6 +61,14 @@ x_change = 0
 y_change = 0
 car_speed = 1
 
+thing_startx = random.randrange(0, display_width)
+thing_starty = -600
+thing_speed = 4
+thing_width = 100
+thing_height = 100
+
+dangerCount = 1
+dodged = 0
 
 while not crashed:
     for event in pygame.event.get():
@@ -74,12 +95,30 @@ while not crashed:
     y += y_change
     ##################
     gameDisplay.fill(white)
+    dangers(thing_startx, thing_starty, thing_width, thing_height, black)
+    thing_starty += thing_speed
     car(x,y)
+    dangers_dodged(dodged)
 
     if x > display_width - car_width or x < 0:
         crash()
     if y > display_height - car_height or y < 0:
-        crash()            
+        crash()
+
+    if thing_starty > display_height:
+        thing_starty = 0 - thing_height
+        thing_startx = random.randrange(0,display_width)
+        dodged += 1
+        thing_speed += .5
+        thing_width += (dodged * .9)
+
+    if y < thing_starty+thing_height:
+            print('y crossover')
+
+            if x > thing_startx and x < thing_startx + thing_width or x+car_width > thing_startx and x + car_width < thing_startx+thing_width:
+                print('x crossover')
+                crash()
+
     pygame.display.update()
     clock.tick(60)
 
