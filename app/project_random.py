@@ -109,7 +109,7 @@ while not crashed:
         thing_starty = 0 - thing_height
         thing_startx = random.randrange(0,display_width)
         dodged += 1
-        thing_speed += .5
+        thing_speed += .2
         thing_width += (dodged * .9)
 
     if y < thing_starty+thing_height:
