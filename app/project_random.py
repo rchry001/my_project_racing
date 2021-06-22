@@ -5,7 +5,7 @@ import random
 pygame.init()
 
 display_width = 900
-display_height = 700
+display_height = 1000
 
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('The Speedracer')
@@ -13,10 +13,13 @@ pygame.display.set_caption('The Speedracer')
 black = (0,0,0)
 white = (255,255,255)
 red = (255,0,0)
+green = (0,255,0)
+blue = (0,0,255)
 
 car_width = 73
 car_height = 82
-
+#pixAr = pygame.PixelArray(gameDisplay)
+#pixAr[5][10] = green
 
 clock = pygame.time.Clock()
 crashed = False
@@ -51,7 +54,7 @@ def message_display(text):
     time.sleep(2)
     game_loop()
 
-def crash():
+def crash(): #Need to improve crash design - Allow player to see Crash text before system quits
     message_display('You Crashed! Game Over....')
 
 
@@ -77,14 +80,14 @@ while not crashed:
         #####################################
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                x_change = -5
+                x_change = -7
             elif event.key == pygame.K_RIGHT:
-                x_change = 5
+                x_change = 7
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                y_change = 5
+                y_change = 2
             elif event.key == pygame.K_DOWN:
-                y_change = -5
+                y_change = -2
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 x_change = 0
