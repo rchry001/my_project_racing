@@ -1,3 +1,4 @@
+#Packages/libraries need to install in order to run program as intended
 
 pygame
 python-dotenv # see: https://github.com/theskumar/python-dotenv
