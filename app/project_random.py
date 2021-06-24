@@ -4,12 +4,16 @@ import time
 import random
 pygame.init()
 
+
+### Display size of pygame screen
 display_width = 900
 display_height = 1000
 
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('The Speedracer Game')
 
+
+### Definition of colors
 black = (0,0,0)
 white = (255,255,255)
 red = (200,0,0)
@@ -24,7 +28,7 @@ car_height = 82
 #pixAr[5][10] = green
 
 clock = pygame.time.Clock()
-crashed = False
+pause = False
 PlayerImg = pygame.image.load('racecar.png')
 ZombieImg = pygame.image.load('zombie danger.png')
 
@@ -51,7 +55,7 @@ def text_objects(text, font):
     textSurface = font.render(text, True, black)
     return textSurface, textSurface.get_rect()
 
-def message_display(text):
+##def message_display(text):
     largeText = pygame.font.Font('freesansbold.ttf',50)
     TextSurf, TextRect = text_objects(text, largeText)
     TextRect.center = ((display_width/2),(display_height/2))
@@ -62,7 +66,10 @@ def message_display(text):
     game_loop()
 
 def crash(): #Need to improve crash design - Allow player to try again after crash
-    message_display('You Crashed! Game Over....')
+    largeText = pygame.font.Font('freesansbold.ttf',50)
+    TextSurf, TextRect = text_objects("You crashed! Game Over...", largeText)
+    TextRect.center = ((display_width/2),(display_height/2))
+    gameDisplay.blit(TextSurf, TextRect)
 
     while True:
         for event in pygame.event.get():
@@ -73,11 +80,28 @@ def crash(): #Need to improve crash design - Allow player to try again after cra
         #gameDisplay.fill(white)
         
 
-        #button("Play Again",150,450,100,50,green,bright_green,game_loop)
-        #button("Quit",550,450,100,50,red,bright_red,quitgame)
+        button("Play Again",200,700,100,50,green,bright_green,game_loop)
+        button("Quit",600,700,100,50,red,bright_red,quitgame)
 
         pygame.display.update()
         clock.tick(15)
+
+### This is to create a button that is interactive
+def button(msg,x,y,w,h,ic,ac, action=None):  ## ic = inactive color and ac = active color
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+    #print(click)
+    if x+w > mouse[0] > x and y+h > mouse[1] > y:
+        pygame.draw.rect(gameDisplay, ac,(x,y,w,h))
+        if click[0] == 1 and action  != None:  ## this line enables the button action
+            action()
+    else:
+        pygame.draw.rect(gameDisplay, ic,(x,y,w,h))
+    smallText = pygame.font.Font("freesansbold.ttf",20)
+    textSurf, textRect = text_objects(msg, smallText)
+    textRect.center = ( (x+(w/2)), (y+(h/2)) )
+    gameDisplay.blit(textSurf, textRect)
+
 
 def game_intro():
 
@@ -95,6 +119,9 @@ def game_intro():
         TextSurf, TextRect = text_objects("The Speedracer!", largeText)
         TextRect.center = ((display_width/2),(display_height/2))
         gameDisplay.blit(TextSurf, TextRect)
+
+        button("RACE!",200,700,100,50,green,bright_green,game_loop)
+        button("QUIT..",600,700,100,50,red,bright_red,quitgame)
 
         mouse = pygame.mouse.get_pos()
         if 200+100 > mouse[0] > 200 and 700+50 > mouse[1] > 700:
@@ -120,7 +147,7 @@ def game_intro():
         pygame.display.update()
         clock.tick(10)
 
-game_intro()
+#game_intro()
 
 def quitgame():
     pygame.quit()
@@ -132,7 +159,7 @@ def unpause():
 
 def paused():
     largeText = pygame.font.SysFont("comicsansms",115)
-    TextSurf, TextRect = text_objects("Paused", largeText)
+    TextSurf, TextRect = text_objects("Paused Game", largeText)
     TextRect.center = ((display_width/2),(display_height/2))
     gameDisplay.blit(TextSurf, TextRect)
 
@@ -144,87 +171,91 @@ def paused():
 
         #gameDisplay.fill(white)
         
-        #button("Continue",150,450,100,50,green,bright_green,unpause)
-        #button("Quit",550,450,100,50,red,bright_red,quitgame)
+        button("Continue",200,700,100,50,green,bright_green,unpause)
+        button("Quit",600,700,100,50,red,bright_red,quitgame)
         pygame.display.update()
         clock.tick(15)
 
 
+def game_loop():
+    global pause
 
-x = (display_width * 0.4)
-y = (display_height * 0.8)
-x_change = 0
-y_change = 0
-car_speed = 1
+    x = (display_width * 0.4)
+    y = (display_height * 0.8)
+    x_change = 0
+    y_change = 0
+    car_speed = 1
 
-thing_startx = random.randrange(0, display_width)
-thing_starty = -600
-thing_speed = 4
-thing_width = 100
-thing_height = 100
+    thing_startx = random.randrange(0, display_width)
+    thing_starty = -600
+    thing_speed = 6
+    thing_width = 100
+    thing_height = 100
 
-dangerCount = 1
-dodged = 0
+    dangerCount = 1
+    dodged = 0
 
-while not crashed:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            crashed = True
-        #####################################
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                x_change = -7
-            elif event.key == pygame.K_RIGHT:
-                x_change = 7
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                y_change = 2
-            elif event.key == pygame.K_DOWN:
-                y_change = -2
-        if event.type == pygame.KEYDOWN: ### This line assigns the pause function to the key "p"
-            if event.key == pygame.K_p:
-                pause = True
-                paused()
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                x_change = 0
-                y_change = 0
+    GameExit  = False
+
+    while not GameExit:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            #####################################
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    x_change = -7
+                elif event.key == pygame.K_RIGHT:
+                    x_change = 7
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    y_change = 2
+                elif event.key == pygame.K_DOWN:
+                    y_change = -2
+            if event.type == pygame.KEYDOWN: ### This line assigns the pause function to the key "p"
+                if event.key == pygame.K_p:
+                    pause = True
+                    paused()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                    x_change = 0
+                    y_change = 0 
+            #####################################
+        ##################
+        x += x_change
+        y += y_change
+        ##################
+        gameDisplay.fill(white)
+        dangers(thing_startx, thing_starty, thing_width, thing_height, red)
+        thing_starty += thing_speed
+        car(x,y)
+        dangers_dodged(dodged)
         
-        #####################################
-    ##################
-    x += x_change
-    y += y_change
-    ##################
-    gameDisplay.fill(white)
-    dangers(thing_startx, thing_starty, thing_width, thing_height, red)
-    thing_starty += thing_speed
-    car(x,y)
-    dangers_dodged(dodged)
-    #zombie(x,y)
-    
-    ##### To Define the boundaries where the car and go within the screen
-    if x > display_width - car_width or x < 0:
-        crash()
-    if y > display_height - car_height or y < 0:
-        crash()
+        ##### To Define the boundaries where the car and go within the screen
+        if x > display_width - car_width or x < 0:
+            crash()
+        if y > display_height - car_height or y < 0:
+            crash()
 
-    if thing_starty > display_height:
-        thing_starty = 0 - thing_height
-        thing_startx = random.randrange(0,display_width)
-        dodged += 1
-        thing_speed += .2
-        thing_width += (dodged * .9)
+        if thing_starty > display_height:
+            thing_starty = 0 - thing_height
+            thing_startx = random.randrange(0,display_width)
+            dodged += 1
+            thing_speed += .2
+            thing_width += (dodged * .8)
 
-    if y < thing_starty+thing_height:
-            print('y crossover')
+        if y < thing_starty+thing_height:
+                print('y crossover')
 
-            if x > thing_startx and x < thing_startx + thing_width or x+car_width > thing_startx and x + car_width < thing_startx+thing_width:
-                print('x crossover')
-                crash()
+                if x > thing_startx and x < thing_startx + thing_width or x+car_width > thing_startx and x + car_width < thing_startx+thing_width:
+                    print('x crossover')
+                    crash()
 
-    pygame.display.update()
-    clock.tick(60)
+        pygame.display.update()
+        clock.tick(60)
 
-
+game_intro()
+game_loop()
 pygame.quit()
 quit()
