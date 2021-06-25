@@ -4,6 +4,9 @@ import time
 import random
 pygame.init()
 
+##Setting up background music
+#pygame.mixer.music.load('Blue_music.mp3')
+#pygame.mixer.music.play(-1)
 
 ### Display size of pygame screen
 display_width = 900
@@ -30,7 +33,8 @@ car_height = 82
 clock = pygame.time.Clock()
 pause = False
 PlayerImg = pygame.image.load('racecar.png')
-ZombieImg = pygame.image.load('zombie danger.png')
+ZombieImg = pygame.image.load('zombie_danger.png')
+ZombieImg_rect = ZombieImg.get_rect()
 
 def dangers_dodged(count):
     font = pygame.font.SysFont(None, 25)
@@ -38,8 +42,8 @@ def dangers_dodged(count):
     gameDisplay.blit(text,(0,0))
 
 ####### Defining the objects the player must avoid
-def dangers(dangers_x, dangers_y, dangers_w, dangers_h, zombie):
-    pygame.draw.rect(gameDisplay, zombie, [dangers_x, dangers_y, dangers_w, dangers_h])
+def dangers(dangers_x, dangers_y, dangers_w, dangers_h, red):
+    pygame.draw.rect(gameDisplay, red, [dangers_x, dangers_y, dangers_w, dangers_h])
 #######
 
 ###### Defining the zombie image to include as dangers
@@ -65,7 +69,9 @@ def text_objects(text, font):
     time.sleep(2)
     game_loop()
 
-def crash(): #Need to improve crash design - Allow player to try again after crash
+def crash():
+    pygame.mixer.music.load('Car_crash.mp3')
+    pygame.mixer.music.play(0)
     largeText = pygame.font.Font('freesansbold.ttf',50)
     TextSurf, TextRect = text_objects("You crashed! Game Over...", largeText)
     TextRect.center = ((display_width/2),(display_height/2))
@@ -80,7 +86,7 @@ def crash(): #Need to improve crash design - Allow player to try again after cra
         #gameDisplay.fill(white)
         
 
-        button("Play Again",200,700,100,50,green,bright_green,game_loop)
+        button("Play Again",200,700,110,50,green,bright_green,game_loop)
         button("Quit",600,700,100,50,red,bright_red,quitgame)
 
         pygame.display.update()
@@ -94,6 +100,8 @@ def button(msg,x,y,w,h,ic,ac, action=None):  ## ic = inactive color and ac = act
     if x+w > mouse[0] > x and y+h > mouse[1] > y:
         pygame.draw.rect(gameDisplay, ac,(x,y,w,h))
         if click[0] == 1 and action  != None:  ## this line enables the button action
+            pygame.mixer.music.load('Blue_music.mp3')
+            pygame.mixer.music.play(-1)
             action()
     else:
         pygame.draw.rect(gameDisplay, ic,(x,y,w,h))
@@ -172,7 +180,7 @@ def paused():
         #gameDisplay.fill(white)
         
         button("Continue",200,700,100,50,green,bright_green,unpause)
-        button("Quit",600,700,100,50,red,bright_red,quitgame)
+        button("Quit..",600,700,100,50,red,bright_red,quitgame)
         pygame.display.update()
         clock.tick(15)
 
@@ -230,6 +238,7 @@ def game_loop():
         dangers(thing_startx, thing_starty, thing_width, thing_height, red)
         thing_starty += thing_speed
         car(x,y)
+        #zombie(x,y)
         dangers_dodged(dodged)
         
         ##### To Define the boundaries where the car and go within the screen
@@ -242,7 +251,7 @@ def game_loop():
             thing_starty = 0 - thing_height
             thing_startx = random.randrange(0,display_width)
             dodged += 1
-            thing_speed += .2
+            thing_speed += .35
             thing_width += (dodged * .8)
 
         if y < thing_starty+thing_height:
@@ -257,5 +266,6 @@ def game_loop():
 
 game_intro()
 game_loop()
+pygame.mixer.music.stop()
 pygame.quit()
 quit()
