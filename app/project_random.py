@@ -5,8 +5,8 @@ import random
 pygame.init()
 
 ##Setting up background music
-#pygame.mixer.music.load('Blue_music.mp3')
-#pygame.mixer.music.play(-1)
+pygame.mixer.music.load('Blue_music.mp3')
+pygame.mixer.music.play(-1)
 
 ### Display size of pygame screen
 display_width = 900
@@ -33,8 +33,9 @@ car_height = 82
 clock = pygame.time.Clock()
 pause = False
 PlayerImg = pygame.image.load('racecar.png')
+RacecarImg_rect = PlayerImg.get_rect()
 ZombieImg = pygame.image.load('zombie_danger.png')
-ZombieImg_rect = ZombieImg.get_rect()
+ZombieImg_rect = ZombieImg.get_rect(topleft = [100,200])
 
 def dangers_dodged(count):
     font = pygame.font.SysFont(None, 25)
@@ -47,12 +48,25 @@ def dangers(dangers_x, dangers_y, dangers_w, dangers_h, red):
 #######
 
 ###### Defining the zombie image to include as dangers
-def zombie(x,y):
-    gameDisplay.blit(ZombieImg, (x,y))
+x_speed = 5
+y_speed = 4
+def zombie():
+    global x_speed, y_speed, car
+    gameDisplay.blit(ZombieImg, ZombieImg_rect)
+    ZombieImg_rect.y += y_speed
+    ZombieImg_rect.x += x_speed
+    if ZombieImg_rect.right >= display_width or ZombieImg_rect.left <=0:
+        x_speed *= -1
+    if ZombieImg_rect.bottom >=display_height or ZombieImg_rect.top <=0:
+        y_speed *= -1
 
 ###### Defining the vehicle the player controls
 def car(x,y):
     gameDisplay.blit(PlayerImg, (x,y))
+    collision_tolerance = 10
+    if ZombieImg_rect.colliderect(RacecarImg_rect):
+        if abs(RacecarImg_rect.top - ZombieImg_rect.bottom) < collision_tolerance:
+            crash()
 
 #Defining the text objects
 def text_objects(text, font):
@@ -91,6 +105,8 @@ def crash():
 
         pygame.display.update()
         clock.tick(15)
+
+
 
 ### This is to create a button that is interactive
 def button(msg,x,y,w,h,ic,ac, action=None):  ## ic = inactive color and ac = active color
@@ -155,7 +171,6 @@ def game_intro():
         pygame.display.update()
         clock.tick(10)
 
-#game_intro()
 
 def quitgame():
     pygame.quit()
@@ -200,6 +215,12 @@ def game_loop():
     thing_width = 100
     thing_height = 100
 
+    #collision_tolerance = 10
+    #if ZombieImg_rect.colliderect(car):
+        #if abs(car.top - ZombieImg_rect.bottom) < collision_tolerance:
+            #crash()
+        
+
     dangerCount = 1
     dodged = 0
 
@@ -218,9 +239,9 @@ def game_loop():
                     x_change = 7
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    y_change = 2
-                elif event.key == pygame.K_DOWN:
                     y_change = -2
+                elif event.key == pygame.K_DOWN:
+                    y_change = 2
             if event.type == pygame.KEYDOWN: ### This line assigns the pause function to the key "p"
                 if event.key == pygame.K_p:
                     pause = True
@@ -238,7 +259,7 @@ def game_loop():
         dangers(thing_startx, thing_starty, thing_width, thing_height, red)
         thing_starty += thing_speed
         car(x,y)
-        #zombie(x,y)
+        zombie()
         dangers_dodged(dodged)
         
         ##### To Define the boundaries where the car and go within the screen
