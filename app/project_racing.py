@@ -95,8 +95,7 @@ def crash():
         for event in pygame.event.get():
             #print(event)
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                quitgame()
         #gameDisplay.fill(white)
         
 
@@ -135,8 +134,7 @@ def game_intro():
         for event in pygame.event.get():
             print(event)
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                quitgame()
                 
         gameDisplay.fill(white)
         largeText = pygame.font.Font('freesansbold.ttf',50)
@@ -189,8 +187,7 @@ def paused():
     while pause:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                quitgame()
 
         #gameDisplay.fill(white)
         
@@ -229,8 +226,7 @@ def game_loop():
     while not GameExit:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                quitgame()
             #####################################
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
