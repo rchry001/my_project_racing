@@ -73,16 +73,6 @@ def text_objects(text, font):
     textSurface = font.render(text, True, black)
     return textSurface, textSurface.get_rect()
 
-##def message_display(text):
-    largeText = pygame.font.Font('freesansbold.ttf',50)
-    TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((display_width/2),(display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
-
-    pygame.display.update()
-    time.sleep(2)
-    game_loop()
-
 def crash():
     pygame.mixer.music.load('Car_crash.mp3')
     pygame.mixer.music.play(0)
@@ -104,7 +94,6 @@ def crash():
 
         pygame.display.update()
         clock.tick(15)
-
 
 
 ### This is to create a button that is interactive
@@ -168,7 +157,6 @@ def game_intro():
 
         pygame.display.update()
         clock.tick(10)
-
 
 def quitgame():
     pygame.quit()
